@@ -56,7 +56,7 @@ function AppContent() {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col md:flex-row overflow-hidden bg-transparent">
+    <div className="flex h-[100dvh] w-full flex-col md:flex-row overflow-hidden bg-transparent">
       {/* Mobile Top Header */}
       <header className="md:hidden flex h-16 items-center justify-between bg-primary-950 px-4 shrink-0 text-white z-40">
         <div className="flex items-center gap-2">
@@ -125,7 +125,7 @@ function AppContent() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto px-4 py-6 pb-24 md:px-8 md:py-0 md:pb-8">
+        <main className="flex-1 overflow-y-auto px-4 py-6 pb-32 md:px-8 md:py-0 md:pb-8">
           <div className="mx-auto max-w-[1400px]">
             {currentView === 'dashboard' && <Dashboard />}
             {currentView === 'inventory' && <Inventory />}

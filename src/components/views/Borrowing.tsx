@@ -133,65 +133,112 @@ export function Borrowing() {
       </div>
 
       <div className="rounded-2xl md:rounded-[2rem] border border-gray-100 bg-white shadow-sm overflow-hidden p-4 md:p-6">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-gray-50 text-gray-600">
-            <tr>
-              <th className="px-6 py-4 font-medium">Item</th>
-              <th className="px-6 py-4 font-medium">Borrower</th>
-              <th className="px-6 py-4 font-medium">Qty</th>
-              <th className="px-6 py-4 font-medium">Status</th>
-              <th className="px-6 py-4 font-medium max-w-[120px]">Date</th>
-              {isAdminOrTech && <th className="px-6 py-4 font-medium text-right">Actions</th>}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {records.map(record => (
-              <tr key={record.id}>
-                <td className="px-6 py-4 font-medium text-gray-900">{getItemName(record.itemId)}</td>
-                <td className="px-6 py-4 text-gray-600">{getUserName(record.userId)}</td>
-                <td className="px-6 py-4 font-mono">{record.quantity}</td>
-                <td className="px-6 py-4">
-                  <span className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium',
-                    record.status === 'borrowed' ? 'bg-blue-50 text-blue-700' :
-                    record.status === 'returned' ? 'bg-emerald-50 text-emerald-700' :
-                    'bg-red-50 text-red-700'
-                  )}>
-                    {record.status === 'borrowed' && <Clock className="h-3.5 w-3.5" />}
-                    {record.status === 'returned' && <CheckCircle className="h-3.5 w-3.5" />}
-                    {record.status === 'overdue' && <AlertCircle className="h-3.5 w-3.5" />}
-                    <span className="capitalize">{record.status}</span>
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-gray-500 max-w-[120px] truncate">
-                  {record.borrowDate?.toDate()?.toLocaleDateString() || 'Pending'}
-                </td>
-                {isAdminOrTech && (
-                  <td className="px-6 py-4 text-right">
-                    {record.status !== 'returned' && (
-                      <select
-                        value={record.status}
-                        onChange={(e) => handleStatusChange(record.id, e.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-primary-500"
-                      >
-                        <option value="borrowed">Borrowed</option>
-                        <option value="overdue">Overdue</option>
-                        <option value="returned">Mark Returned</option>
-                      </select>
-                    )}
-                  </td>
-                )}
-              </tr>
-            ))}
-            {records.length === 0 && (
+            <thead className="bg-gray-50 text-gray-600">
               <tr>
-                <td colSpan={isAdminOrTech ? 6 : 5} className="px-6 py-12 text-center text-gray-500">
-                  No borrowing records found.
-                </td>
+                <th className="px-6 py-4 font-medium">Item</th>
+                <th className="px-6 py-4 font-medium">Borrower</th>
+                <th className="px-6 py-4 font-medium">Qty</th>
+                <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-medium max-w-[120px]">Date</th>
+                {isAdminOrTech && <th className="px-6 py-4 font-medium text-right">Actions</th>}
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {records.map(record => (
+                <tr key={record.id} className="hover:bg-gray-50/50">
+                  <td className="px-6 py-4 font-medium text-gray-900">{getItemName(record.itemId)}</td>
+                  <td className="px-6 py-4 text-gray-600">{getUserName(record.userId)}</td>
+                  <td className="px-6 py-4 font-mono">{record.quantity}</td>
+                  <td className="px-6 py-4">
+                    <span className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium',
+                      record.status === 'borrowed' ? 'bg-blue-50 text-blue-700' :
+                      record.status === 'returned' ? 'bg-emerald-50 text-emerald-700' :
+                      'bg-red-50 text-red-700'
+                    )}>
+                      {record.status === 'borrowed' && <Clock className="h-3.5 w-3.5" />}
+                      {record.status === 'returned' && <CheckCircle className="h-3.5 w-3.5" />}
+                      {record.status === 'overdue' && <AlertCircle className="h-3.5 w-3.5" />}
+                      <span className="capitalize">{record.status}</span>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-500 max-w-[120px] truncate">
+                    {record.borrowDate?.toDate()?.toLocaleDateString() || 'Pending'}
+                  </td>
+                  {isAdminOrTech && (
+                    <td className="px-6 py-4 text-right">
+                      {record.status !== 'returned' && (
+                        <select
+                          value={record.status}
+                          onChange={(e) => handleStatusChange(record.id, e.target.value)}
+                          className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-primary-500 bg-white"
+                        >
+                          <option value="borrowed">Borrowed</option>
+                          <option value="overdue">Overdue</option>
+                          <option value="returned">Mark Returned</option>
+                        </select>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              ))}
+              {records.length === 0 && (
+                <tr>
+                  <td colSpan={isAdminOrTech ? 6 : 5} className="px-6 py-12 text-center text-gray-500">
+                    No borrowing records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden flex flex-col gap-4">
+          {records.map(record => (
+            <div key={record.id} className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-semibold text-gray-900">{getItemName(record.itemId)}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{record.borrowDate?.toDate()?.toLocaleDateString() || 'Pending'}</p>
+                </div>
+                <span className={cn('shrink-0 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium capitalize',
+                  record.status === 'borrowed' ? 'bg-blue-50 text-blue-700' :
+                  record.status === 'returned' ? 'bg-emerald-50 text-emerald-700' :
+                  'bg-red-50 text-red-700'
+                )}>
+                  {record.status === 'borrowed' && <Clock className="h-3 w-3" />}
+                  {record.status === 'returned' && <CheckCircle className="h-3 w-3" />}
+                  {record.status === 'overdue' && <AlertCircle className="h-3 w-3" />}
+                  {record.status}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm pt-3 mt-1 border-t border-gray-100">
+                <div className="flex flex-col gap-1 pr-2">
+                  <span className="text-gray-500 text-xs truncate max-w-[140px]">{getUserName(record.userId)}</span>
+                  <span className="font-mono font-medium text-gray-700 text-xs">Qty: {record.quantity}</span>
+                </div>
+                {isAdminOrTech && record.status !== 'returned' && (
+                  <select
+                    value={record.status}
+                    onChange={(e) => handleStatusChange(record.id, e.target.value)}
+                    className="rounded-lg border border-gray-200 px-2 py-1.5 text-xs focus:border-primary-500 bg-white shadow-sm"
+                  >
+                    <option value="borrowed">Borrowed</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="returned">Return</option>
+                  </select>
+                )}
+              </div>
+            </div>
+          ))}
+          {records.length === 0 && (
+            <div className="py-8 text-center text-gray-500 text-sm">
+              No borrowing records found.
+            </div>
+          )}
         </div>
       </div>
 

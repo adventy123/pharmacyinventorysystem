@@ -111,7 +111,8 @@ export function Inventory() {
       </div>
 
       <div className="rounded-2xl md:rounded-[2rem] border border-gray-100 bg-white shadow-sm overflow-hidden p-4 md:p-6">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
@@ -165,6 +166,50 @@ export function Inventory() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden flex flex-col gap-4">
+          {filteredItems.map(item => (
+            <div key={item.id} className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-semibold text-gray-900">{item.name}</p>
+                  {item.description && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.description}</p>}
+                </div>
+                <span className={cn('shrink-0 inline-flex items-center rounded-full px-2 py-1 text-[10px] font-medium capitalize', 
+                  item.type === 'glassware' ? 'bg-blue-50 text-blue-700' :
+                  item.type === 'chemical' ? 'bg-amber-50 text-amber-700' :
+                  'bg-emerald-50 text-emerald-700'
+                )}>
+                  {item.type}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm pt-3 border-t border-gray-100 mt-1">
+                <div className="flex flex-col gap-1">
+                  <span className="text-gray-500 text-xs">Loc: {item.location}</span>
+                  <span className="font-mono font-medium text-gray-700 text-xs">Qty: {item.quantity}</span>
+                </div>
+                {isAdminOrTech && (
+                  <div className="flex gap-2">
+                    <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="rounded-lg p-2 bg-white border border-gray-200 text-gray-500 hover:text-primary-600 shadow-sm">
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    {userRole === 'admin' && (
+                      <button onClick={() => handleDelete(item.id)} className="rounded-lg p-2 bg-white border border-gray-200 text-gray-500 hover:text-red-600 shadow-sm">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {filteredItems.length === 0 && (
+            <div className="py-8 text-center text-gray-500 text-sm">
+              No items found.
+            </div>
+          )}
         </div>
       </div>
 

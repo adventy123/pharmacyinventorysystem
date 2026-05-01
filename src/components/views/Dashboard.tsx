@@ -121,7 +121,8 @@ export function Dashboard() {
           <h2 className="text-base md:text-lg font-semibold text-gray-900">Recent Borrowings</h2>
         </div>
         
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="border-b border-gray-100 text-gray-400">
               <tr>
@@ -167,6 +168,38 @@ export function Dashboard() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden flex flex-col gap-4">
+          {recentActivity.map(record => (
+            <div key={record.id} className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-semibold text-gray-900 line-clamp-1">{itemsMap[record.itemId] || 'Unknown Item'}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{record.borrowDate?.toDate()?.toLocaleDateString() || 'Pending'}</p>
+                </div>
+                <span className={cn('shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium',
+                  record.status === 'borrowed' ? 'bg-secondary-50 text-secondary-700' :
+                  record.status === 'returned' ? 'bg-emerald-50 text-emerald-700' :
+                  'bg-red-50 text-red-700'
+                )}>
+                  <span className="capitalize">{record.status}</span>
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm pt-3 border-t border-gray-100">
+                <span className="text-gray-500 truncate pr-4">
+                  {isAdminOrTech ? (usersMap[record.userId] || 'Unknown User') : ''}
+                </span>
+                <span className="font-mono font-medium text-gray-700 shrink-0">Qty: {record.quantity}</span>
+              </div>
+            </div>
+          ))}
+          {recentActivity.length === 0 && (
+            <div className="py-8 text-center text-gray-500 text-sm">
+              No recent activity found.
+            </div>
+          )}
         </div>
       </div>
     </div>
