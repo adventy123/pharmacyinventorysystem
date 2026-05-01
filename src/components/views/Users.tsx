@@ -36,7 +36,8 @@ export function Users() {
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-gray-50 text-gray-600">
             <tr>
               <th className="px-6 py-4 font-medium">User</th>
@@ -76,6 +77,7 @@ export function Users() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

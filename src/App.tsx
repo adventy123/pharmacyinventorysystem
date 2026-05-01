@@ -5,11 +5,11 @@ import { Dashboard } from './components/views/Dashboard';
 import { Inventory } from './components/views/Inventory';
 import { Borrowing } from './components/views/Borrowing';
 import { Users } from './components/views/Users';
-import { LogIn, FlaskConical } from 'lucide-react';
+import { LogIn, FlaskConical, LogOut } from 'lucide-react';
 import { RoleSelection } from './components/RoleSelection';
 
 function AppContent() {
-  const { user, userRole, loading, signIn } = useAuth();
+  const { user, userRole, loading, signIn, logOut } = useAuth();
   const [currentView, setCurrentView] = useState('inventory');
 
   if (loading) {
@@ -56,9 +56,21 @@ function AppContent() {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-primary-50">
+    <div className="flex h-screen w-full flex-col md:flex-row overflow-hidden bg-primary-50">
+      {/* Mobile Header */}
+      <header className="md:hidden flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 shrink-0">
+        <div className="flex items-center gap-2">
+          <FlaskConical className="h-5 w-5 text-primary-600" />
+          <span className="font-semibold text-gray-900">SLRC Lab</span>
+        </div>
+        <button onClick={logOut} className="p-2 text-gray-500 hover:text-red-600 transition-colors">
+          <LogOut className="h-5 w-5" />
+        </button>
+      </header>
+
       <Sidebar currentView={currentView} onNavigate={setCurrentView} />
-      <main className="flex-1 overflow-y-auto px-8 py-8">
+      
+      <main className="flex-1 overflow-y-auto px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8">
         <div className="mx-auto max-w-6xl">
           {currentView === 'dashboard' && <Dashboard />}
           {currentView === 'inventory' && <Inventory />}
