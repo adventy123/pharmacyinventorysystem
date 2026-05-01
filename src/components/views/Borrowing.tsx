@@ -109,6 +109,7 @@ export function Borrowing() {
   };
 
   const getItemName = (id: string) => items.find(i => i.id === id)?.name || 'Unknown Item';
+  const getItemUnit = (id: string) => items.find(i => i.id === id)?.unit || '';
   const getUserName = (id: string) => {
     if (id === user?.uid) return 'You';
     return users.find(u => u.id === id)?.displayName || users.find(u => u.id === id)?.email || 'Unknown User';
@@ -151,7 +152,7 @@ export function Borrowing() {
                 <tr key={record.id} className="hover:bg-gray-50/50">
                   <td className="px-6 py-4 font-medium text-gray-900">{getItemName(record.itemId)}</td>
                   <td className="px-6 py-4 text-gray-600">{getUserName(record.userId)}</td>
-                  <td className="px-6 py-4 font-mono">{record.quantity}</td>
+                  <td className="px-6 py-4 font-mono">{record.quantity} {getItemUnit(record.itemId)}</td>
                   <td className="px-6 py-4">
                     <span className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium',
                       record.status === 'borrowed' ? 'bg-blue-50 text-blue-700' :
@@ -218,7 +219,7 @@ export function Borrowing() {
               <div className="flex items-center justify-between text-sm pt-3 mt-1 border-t border-gray-100">
                 <div className="flex flex-col gap-1 pr-2">
                   <span className="text-gray-500 text-xs truncate max-w-[140px]">{getUserName(record.userId)}</span>
-                  <span className="font-mono font-medium text-gray-700 text-xs">Qty: {record.quantity}</span>
+                  <span className="font-mono font-medium text-gray-700 text-xs">Qty: {record.quantity} {getItemUnit(record.itemId)}</span>
                 </div>
                 {isAdminOrTech && record.status !== 'returned' && (
                   <select
@@ -289,7 +290,7 @@ export function Borrowing() {
                         >
                           <option value="">Select an Item...</option>
                           {items.map(item => (
-                            <option key={item.id} value={item.id}>{item.name} ({item.quantity} in stock)</option>
+                            <option key={item.id} value={item.id}>{item.name} ({item.quantity} {item.unit} in stock)</option>
                           ))}
                         </select>
                         <div className="flex items-center gap-3">

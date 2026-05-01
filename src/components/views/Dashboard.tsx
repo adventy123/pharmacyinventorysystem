@@ -17,7 +17,7 @@ export function Dashboard() {
   });
   
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
-  const [itemsMap, setItemsMap] = useState<Record<string, string>>({});
+  const [itemsMap, setItemsMap] = useState<Record<string, { name: string, unit: string }>>({});
   const [usersMap, setUsersMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -25,11 +25,11 @@ export function Dashboard() {
     const unsubItems = onSnapshot(collection(db, 'items'), (snap) => {
       let total = 0;
       let low = 0;
-      const map: Record<string, string> = {};
+      const map: Record<string, { name: string, unit: string }> = {};
       snap.forEach(doc => {
         total++;
         if (doc.data().quantity < 5) low++;
-        map[doc.id] = doc.data().name;
+        map[doc.id] = { name: doc.data().name, unit: doc.data().unit || '' };
       });
       setStats(s => ({ ...s, totalItems: total, lowStock: low }));
       setItemsMap(map);
@@ -137,7 +137,7 @@ export function Dashboard() {
               {recentActivity.map(record => (
                 <tr key={record.id} className="group">
                   <td className="py-3 md:py-4 font-medium text-gray-900">
-                    {itemsMap[record.itemId] || 'Unknown Item'}
+                    {itemsMap[record.itemId]?.name || 'Unknown Item'}
                   </td>
                   {isAdminOrTech && (
                     <td className="py-3 md:py-4 text-gray-500">
@@ -147,7 +147,7 @@ export function Dashboard() {
                   <td className="py-3 md:py-4 text-gray-500">
                     {record.borrowDate?.toDate()?.toLocaleDateString() || 'Pending'}
                   </td>
-                  <td className="py-3 md:py-4 font-mono text-gray-600">x{record.quantity}</td>
+                  <td className="py-3 md:py-4 font-mono text-gray-600">x{record.quantity} {itemsMap[record.itemId]?.unit}</td>
                   <td className="py-3 md:py-4">
                     <span className={cn('inline-flex items-center px-2.5 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-medium',
                       record.status === 'borrowed' ? 'bg-secondary-50 text-secondary-700' :
@@ -176,7 +176,7 @@ export function Dashboard() {
             <div key={record.id} className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-4 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="font-semibold text-gray-900 line-clamp-1">{itemsMap[record.itemId] || 'Unknown Item'}</p>
+                  <p className="font-semibold text-gray-900 line-clamp-1">{itemsMap[record.itemId]?.name || 'Unknown Item'}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{record.borrowDate?.toDate()?.toLocaleDateString() || 'Pending'}</p>
                 </div>
                 <span className={cn('shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium',
@@ -191,7 +191,7 @@ export function Dashboard() {
                 <span className="text-gray-500 truncate pr-4">
                   {isAdminOrTech ? (usersMap[record.userId] || 'Unknown User') : ''}
                 </span>
-                <span className="font-mono font-medium text-gray-700 shrink-0">Qty: {record.quantity}</span>
+                <span className="font-mono font-medium text-gray-700 shrink-0">Qty: {record.quantity} {itemsMap[record.itemId]?.unit}</span>
               </div>
             </div>
           ))}

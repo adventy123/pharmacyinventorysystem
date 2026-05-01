@@ -14,6 +14,7 @@ export function Inventory() {
   const [filterType, setFilterType] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [selectedType, setSelectedType] = useState('glassware');
 
   useEffect(() => {
     const q = query(collection(db, 'items'));
@@ -39,9 +40,10 @@ export function Inventory() {
       name: formData.get('name') as string,
       type: formData.get('type') as string,
       quantity: parseInt(formData.get('quantity') as string, 10),
+      unit: formData.get('unit') as string || '',
       location: formData.get('location') as string,
       description: formData.get('description') as string,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     try {
@@ -75,7 +77,7 @@ export function Inventory() {
         </div>
         {isAdminOrTech && (
           <button
-            onClick={() => { setEditingItem(null); setIsModalOpen(true); }}
+            onClick={() => { setEditingItem(null); setSelectedType('glassware'); setIsModalOpen(true); }}
             className="flex items-center gap-2 rounded-lg bg-primary-600 px-3 sm:px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 shrink-0"
           >
             <Plus className="h-5 w-5 sm:h-4 sm:w-4" />
@@ -139,12 +141,12 @@ export function Inventory() {
                       {item.type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 font-mono text-gray-600">{item.quantity}</td>
+                  <td className="px-6 py-4 font-mono text-gray-600">{item.quantity} {item.unit}</td>
                   <td className="px-6 py-4 text-gray-500">{item.location}</td>
                   {isAdminOrTech && (
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-md hover:bg-primary-50">
+                        <button onClick={() => { setEditingItem(item); setSelectedType(item.type || 'glassware'); setIsModalOpen(true); }} className="p-1.5 text-gray-400 hover:text-primary-600 rounded-md hover:bg-primary-50">
                           <Edit2 className="h-4 w-4" />
                         </button>
                         {userRole === 'admin' && (
@@ -188,11 +190,11 @@ export function Inventory() {
               <div className="flex items-center justify-between text-sm pt-3 border-t border-gray-100 mt-1">
                 <div className="flex flex-col gap-1">
                   <span className="text-gray-500 text-xs">Loc: {item.location}</span>
-                  <span className="font-mono font-medium text-gray-700 text-xs">Qty: {item.quantity}</span>
+                  <span className="font-mono font-medium text-gray-700 text-xs">Qty: {item.quantity} {item.unit}</span>
                 </div>
                 {isAdminOrTech && (
                   <div className="flex gap-2">
-                    <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="rounded-lg p-2 bg-white border border-gray-200 text-gray-500 hover:text-primary-600 shadow-sm">
+                    <button onClick={() => { setEditingItem(item); setSelectedType(item.type || 'glassware'); setIsModalOpen(true); }} className="rounded-lg p-2 bg-white border border-gray-200 text-gray-500 hover:text-primary-600 shadow-sm">
                       <Edit2 className="h-4 w-4" />
                     </button>
                     {userRole === 'admin' && (
@@ -225,7 +227,7 @@ export function Inventory() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Type</label>
-                  <select required name="type" defaultValue={editingItem?.type || 'glassware'} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                  <select required name="type" value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
                     <option value="glassware">Glassware</option>
                     <option value="chemical">Chemicals</option>
                     <option value="equipment">Equipment</option>
@@ -233,7 +235,15 @@ export function Inventory() {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Quantity</label>
-                  <input required name="quantity" type="number" min="0" defaultValue={editingItem?.quantity} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500" />
+                  <div className="flex gap-2">
+                    <input required name="quantity" type="number" min="0" defaultValue={editingItem?.quantity} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500" />
+                    {selectedType === 'chemical' && (
+                      <select name="unit" defaultValue={editingItem?.unit || 'g'} className="w-24 rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 bg-gray-50">
+                        <option value="g">g</option>
+                        <option value="mL">mL</option>
+                      </select>
+                    )}
+                  </div>
                 </div>
               </div>
               <div>
