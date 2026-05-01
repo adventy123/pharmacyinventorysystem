@@ -45,8 +45,8 @@ function AppContent() {
         {/* Bottom Sheet Section */}
         <div className="w-full shrink-0 rounded-t-[2.5rem] bg-white px-8 pt-12 pb-14 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col items-center text-center z-10 md:max-w-md md:rounded-[2.5rem] md:shadow-2xl md:shrink md:flex-none md:mb-12">
           
-          <h1 className="mb-3 text-3xl md:text-4xl font-light tracking-tight text-primary-600 uppercase">
-            SLRC LAB
+          <h1 className="mb-3 text-2xl md:text-3xl font-light tracking-tight text-primary-600 uppercase">
+            SLRC LAB INVENTORY SYSTEM
           </h1>
           
           <h2 className="mb-4 text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
@@ -59,7 +59,7 @@ function AppContent() {
           
           <button
             onClick={signIn}
-            className="flex w-full items-center justify-center gap-3 rounded-full bg-secondary-500 px-4 py-4 md:py-5 text-base md:text-lg font-bold text-white transition-all hover:bg-secondary-600 hover:shadow-[0_8px_20px_-6px_rgba(245,158,11,0.5)] active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-3 rounded-full bg-primary-600 px-4 py-4 md:py-5 text-base md:text-lg font-bold text-white transition-all hover:bg-primary-700 hover:shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)] active:scale-[0.98]"
           >
             <LogIn className="h-5 w-5 md:h-6 md:w-6" />
             Get Started
