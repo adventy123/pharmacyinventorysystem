@@ -17,6 +17,7 @@ export function Sidebar({ currentView, onNavigate }: { currentView: string; onNa
     navItems.push({ id: 'users', label: 'Users', icon: Users });
   }
 
+  return (
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-64 flex-shrink-0 flex-col border-r border-gray-200 bg-white">
@@ -93,4 +94,5 @@ export function Sidebar({ currentView, onNavigate }: { currentView: string; onNa
         ))}
       </nav>
     </>
+  );
 }
