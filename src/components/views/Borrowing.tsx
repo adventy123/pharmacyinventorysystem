@@ -116,18 +116,18 @@ export function Borrowing() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Borrowing Records</h1>
-          <p className="text-sm text-gray-500">Track borrowed equipment and materials.</p>
+          <p className="text-sm text-gray-500 hidden sm:block">Track borrowed equipment and materials.</p>
         </div>
         {isAdminOrTech && (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
+            className="flex items-center gap-2 rounded-lg bg-primary-600 px-3 sm:px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 shrink-0"
           >
-            <Plus className="h-4 w-4" />
-            New Borrow Record
+            <Plus className="h-5 w-5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">New Record</span>
           </button>
         )}
       </div>

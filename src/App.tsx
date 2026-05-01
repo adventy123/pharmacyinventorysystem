@@ -10,7 +10,7 @@ import { RoleSelection } from './components/RoleSelection';
 
 function AppContent() {
   const { user, userRole, loading, signIn, logOut } = useAuth();
-  const [currentView, setCurrentView] = useState('inventory');
+  const [currentView, setCurrentView] = useState('dashboard');
 
   if (loading) {
     return (
@@ -81,7 +81,7 @@ function AppContent() {
 
       <Sidebar currentView={currentView} onNavigate={setCurrentView} />
       
-      <div className="flex flex-1 flex-col min-w-0">
+      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         {/* Desktop Top Header */}
         <header className="hidden md:flex h-24 shrink-0 items-center justify-between px-8">
           {/* Search Bar */}
