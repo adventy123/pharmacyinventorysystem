@@ -25,26 +25,46 @@ function AppContent() {
 
   if (!user) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-gray-50 px-4">
-        <div className="max-w-md w-full rounded-3xl bg-white p-8 shadow-xl">
-          <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-6 rounded-2xl bg-secondary-500/20 p-4 text-secondary-500">
-              <FlaskConical className="h-10 w-10" />
-            </div>
-            <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900">
-              SLRC Pharmaceutical Chemistry Lab
-            </h1>
-            <p className="text-sm text-gray-500">
-              San Lorenzo Ruiz College<br/>Inventory & Borrowing System
-            </p>
+      <div className="flex h-[100dvh] w-full flex-col relative bg-gradient-to-br from-primary-700 via-primary-800 to-primary-950 md:items-center md:justify-center overflow-hidden">
+        
+        {/* Decorative background blobs */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+            <div className="absolute -top-[10%] -right-[10%] w-[60vw] h-[60vw] md:w-[30vw] md:h-[30vw] rounded-full bg-primary-500/30 blur-3xl mix-blend-screen"></div>
+            <div className="absolute top-[30%] -left-[10%] w-[50vw] h-[50vw] md:w-[20vw] md:h-[20vw] rounded-full bg-secondary-500/20 blur-3xl mix-blend-screen"></div>
+        </div>
+
+        {/* Top Section / Logo Placeholder */}
+        <div className="flex flex-1 md:flex-none md:mb-10 items-center justify-center p-8 pb-4 z-10 w-full">
+          <div className="relative flex flex-col items-center">
+             {/* You can replace this icon with your actual <img src="/logo.png" /> */}
+             <div className="h-40 w-40 md:h-48 md:w-48 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-2xl transition-transform hover:scale-105 duration-500">
+               <FlaskConical className="h-20 w-20 md:h-24 md:w-24 text-white drop-shadow-lg" />
+             </div>
+             <p className="mt-6 text-white/60 font-medium tracking-widest uppercase text-xs">Your Logo Here</p>
           </div>
+        </div>
+
+        {/* Bottom Sheet Section */}
+        <div className="w-full shrink-0 rounded-t-[2.5rem] bg-white px-8 pt-12 pb-14 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col items-center text-center z-10 md:max-w-md md:rounded-[2.5rem] md:shadow-2xl md:shrink md:flex-none md:mb-12">
+          
+          <h1 className="mb-3 text-3xl md:text-4xl font-light tracking-tight text-primary-600 uppercase">
+            SLRC LAB
+          </h1>
+          
+          <h2 className="mb-4 text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+            Let's Get You Set Up<br/>for Success
+          </h2>
+
+          <p className="mb-10 text-sm md:text-base text-gray-500 leading-relaxed px-4 max-w-[300px]">
+            Organize your lab workflow and manage inventory easily all in one simple, powerful app.
+          </p>
           
           <button
             onClick={signIn}
-            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-primary-950 px-4 py-4 text-sm font-medium text-white transition-all hover:bg-primary-900 hover:shadow-lg hover:shadow-primary-900/20"
+            className="flex w-full items-center justify-center gap-3 rounded-full bg-secondary-500 px-4 py-4 md:py-5 text-base md:text-lg font-bold text-white transition-all hover:bg-secondary-600 hover:shadow-[0_8px_20px_-6px_rgba(245,158,11,0.5)] active:scale-[0.98]"
           >
-            <LogIn className="h-5 w-5" />
-            Sign in with Google
+            <LogIn className="h-5 w-5 md:h-6 md:w-6" />
+            Get Started
           </button>
         </div>
       </div>
