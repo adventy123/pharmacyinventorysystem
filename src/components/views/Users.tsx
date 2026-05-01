@@ -35,7 +35,7 @@ export function Users() {
         <p className="text-sm text-gray-500">Manage user roles and access to the system.</p>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-[2rem] border border-gray-100 bg-white shadow-sm overflow-hidden p-4">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-gray-50 text-gray-600">

@@ -13,6 +13,11 @@ export function Borrowing() {
   const [items, setItems] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Multiple Items State
+  const [borrowRequests, setBorrowRequests] = useState([{ itemId: '', quantity: 1 }]);
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -34,6 +39,8 @@ export function Borrowing() {
       unsubUsers = onSnapshot(collection(db, 'users'), (snap) => {
         setUsers(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       }, (e) => handleFirestoreError(e, OperationType.LIST, 'users'));
+    } else {
+      setSelectedUserId(user.uid);
     }
 
     return () => {
@@ -45,21 +52,48 @@ export function Borrowing() {
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      itemId: formData.get('itemId') as string,
-      userId: formData.get('userId') as string,
-      quantity: parseInt(formData.get('quantity') as string, 10),
-      status: 'borrowed',
-      borrowDate: serverTimestamp()
-    };
+    if (!selectedUserId) return alert("Please select a user.");
+    
+    // Filter out incomplete requests
+    const validRequests = borrowRequests.filter(req => req.itemId && req.quantity > 0);
+    if (validRequests.length === 0) return alert("Please add at least one item.");
 
+    setIsSubmitting(true);
     try {
-      await addDoc(collection(db, 'borrowRecords'), data);
+      // Create a separate record for each item requested
+      for (const req of validRequests) {
+        const data = {
+          itemId: req.itemId,
+          userId: selectedUserId,
+          quantity: req.quantity,
+          status: 'borrowed',
+          borrowDate: serverTimestamp()
+        };
+        await addDoc(collection(db, 'borrowRecords'), data);
+      }
       setIsModalOpen(false);
+      setBorrowRequests([{ itemId: '', quantity: 1 }]);
+      if (isAdminOrTech) setSelectedUserId('');
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'borrowRecords');
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const addRequestRow = () => {
+    setBorrowRequests([...borrowRequests, { itemId: '', quantity: 1 }]);
+  };
+  
+  const updateRequestRow = (index: number, field: string, value: string | number) => {
+    const newRequests = [...borrowRequests];
+    newRequests[index] = { ...newRequests[index], [field]: value };
+    setBorrowRequests(newRequests);
+  };
+  
+  const removeRequestRow = (index: number) => {
+    if (borrowRequests.length === 1) return;
+    setBorrowRequests(borrowRequests.filter((_, i) => i !== index));
   };
 
   const handleStatusChange = async (recordId: string, newStatus: string) => {
@@ -98,7 +132,7 @@ export function Borrowing() {
         )}
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-[2rem] border border-gray-100 bg-white shadow-sm overflow-hidden p-4">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-gray-50 text-gray-600">
@@ -163,35 +197,95 @@ export function Borrowing() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">New Borrow Record</h2>
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Item</label>
-                <select required name="itemId" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500">
-                  <option value="">Select an Item...</option>
-                  {items.map(item => (
-                    <option key={item.id} value={item.id}>{item.name} ({item.quantity} in stock)</option>
+          <div className="w-full max-w-lg rounded-[2rem] bg-white p-8 shadow-2xl">
+            <h2 className="mb-6 text-xl font-semibold text-gray-900">New Borrow Request</h2>
+            <form onSubmit={handleSave} className="space-y-6">
+              
+              {isAdminOrTech && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">Borrower (User)</label>
+                  <select 
+                    required 
+                    value={selectedUserId}
+                    onChange={(e) => setSelectedUserId(e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  >
+                     <option value="">Select a User...</option>
+                     {users.map(u => (
+                        <option key={u.id} value={u.id}>{u.displayName || u.email} ({u.role})</option>
+                     ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-gray-700">Items to Borrow</label>
+                  <button 
+                    type="button" 
+                    onClick={addRequestRow}
+                    className="text-xs font-medium text-secondary-600 hover:text-secondary-700 flex items-center gap-1"
+                  >
+                    <Plus className="h-3 w-3" /> Add Item
+                  </button>
+                </div>
+                
+                <div className="max-h-[300px] overflow-y-auto pr-2 space-y-3">
+                  {borrowRequests.map((req, index) => (
+                    <div key={index} className="flex items-start gap-3 bg-gray-50 p-3 rounded-xl">
+                      <div className="flex-1 space-y-3">
+                        <select 
+                          required 
+                          value={req.itemId}
+                          onChange={(e) => updateRequestRow(index, 'itemId', e.target.value)}
+                          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-primary-500 bg-white"
+                        >
+                          <option value="">Select an Item...</option>
+                          {items.map(item => (
+                            <option key={item.id} value={item.id}>{item.name} ({item.quantity} in stock)</option>
+                          ))}
+                        </select>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-gray-500">Qty:</span>
+                          <input 
+                            required 
+                            type="number" 
+                            min="1" 
+                            value={req.quantity}
+                            onChange={(e) => updateRequestRow(index, 'quantity', parseInt(e.target.value) || 1)}
+                            className="w-20 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:border-primary-500 bg-white" 
+                          />
+                        </div>
+                      </div>
+                      {borrowRequests.length > 1 && (
+                        <button 
+                          type="button" 
+                          onClick={() => removeRequestRow(index)}
+                          className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                      )}
+                    </div>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Borrower (User)</label>
-                <select required name="userId" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500">
-                   <option value="">Select a User...</option>
-                   {users.map(u => (
-                      <option key={u.id} value={u.id}>{u.displayName || u.email} ({u.role})</option>
-                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Quantity</label>
-                <input required name="quantity" type="number" min="1" defaultValue="1" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500" />
+                </div>
               </div>
               
-              <div className="mt-6 flex justify-end gap-3">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">Cancel</button>
-                <button type="submit" className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700">Create Record</button>
+              <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <button 
+                  type="button" 
+                  onClick={() => setIsModalOpen(false)} 
+                  className="rounded-xl px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Saving...' : 'Confirm Borrow'}
+                </button>
               </div>
             </form>
           </div>

@@ -20,59 +20,33 @@ export function Sidebar({ currentView, onNavigate }: { currentView: string; onNa
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 flex-shrink-0 flex-col border-r border-gray-200 bg-white">
-        <div className="flex h-16 items-center gap-3 border-b border-gray-200 px-6">
-          <FlaskConical className="h-6 w-6 text-primary-600" />
-          <span className="font-semibold text-gray-900">SLRC Lab</span>
+      <aside className="hidden md:flex w-20 flex-shrink-0 flex-col items-center border-r border-primary-900 bg-primary-950 py-6 shadow-2xl">
+        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-500/20 text-secondary-500">
+          <FlaskConical className="h-6 w-6" />
         </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto p-4">
+        <nav className="flex flex-1 flex-col items-center gap-4 w-full px-4">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
               className={cn(
-                'group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                'group flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-200 ease-in-out',
                 currentView === item.id
-                  ? 'bg-primary-50 text-primary-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-secondary-500 text-white shadow-lg shadow-secondary-500/30'
+                  : 'text-primary-300 hover:bg-primary-900 hover:text-white'
               )}
+              title={item.label}
             >
               <item.icon
                 className={cn(
-                  'h-5 w-5 flex-shrink-0',
-                  currentView === item.id ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-500'
+                  'h-5 w-5 flex-shrink-0 transition-transform duration-200',
+                  currentView === item.id ? 'scale-110' : 'group-hover:scale-110'
                 )}
               />
-              {item.label}
             </button>
           ))}
         </nav>
-
-        <div className="border-t border-gray-200 p-4">
-          <div className="flex items-center gap-3 px-3 py-2">
-            {user?.photoURL ? (
-              <img src={user.photoURL} alt="" className="h-8 w-8 rounded-full bg-gray-100" referrerPolicy="no-referrer" />
-            ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-medium text-primary-700">
-                {user?.email?.[0].toUpperCase()}
-              </div>
-            )}
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-900 overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
-                {user?.displayName || 'User'}
-              </span>
-              <span className="text-xs text-gray-500 capitalize">{userRole?.replace('_', ' ')}</span>
-            </div>
-          </div>
-          <button
-            onClick={logOut}
-            className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-700 transition-colors"
-          >
-            <LogOut className="h-5 w-5 text-gray-400" />
-            Sign out
-          </button>
-        </div>
       </aside>
 
       {/* Mobile Bottom Navigation */}
@@ -88,8 +62,8 @@ export function Sidebar({ currentView, onNavigate }: { currentView: string; onNa
                 : 'text-gray-500 hover:text-gray-900'
             )}
           >
-            <item.icon className={cn('h-5 w-5', currentView === item.id ? 'text-primary-600' : 'text-gray-400')} />
-            <span className="truncate max-w-[64px] text-[10px]">{item.label}</span>
+            <item.icon className={cn('h-5 w-5 transition-transform', currentView === item.id ? 'text-secondary-500 scale-110' : 'text-gray-400')} />
+            <span className={cn("truncate max-w-[64px] text-[10px]", currentView === item.id ? "text-secondary-600 font-semibold" : "")}>{item.label}</span>
           </button>
         ))}
       </nav>

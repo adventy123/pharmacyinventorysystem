@@ -5,7 +5,7 @@ import { Dashboard } from './components/views/Dashboard';
 import { Inventory } from './components/views/Inventory';
 import { Borrowing } from './components/views/Borrowing';
 import { Users } from './components/views/Users';
-import { LogIn, FlaskConical, LogOut } from 'lucide-react';
+import { LogIn, FlaskConical, LogOut, Search, Bell, Calendar, ChevronDown } from 'lucide-react';
 import { RoleSelection } from './components/RoleSelection';
 
 function AppContent() {
@@ -14,7 +14,7 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-primary-50">
+      <div className="flex h-screen w-full items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center gap-4">
           <FlaskConical className="h-12 w-12 animate-pulse text-primary-600" />
           <p className="font-mono text-sm uppercase tracking-widest text-primary-600/70">Loading System</p>
@@ -25,11 +25,11 @@ function AppContent() {
 
   if (!user) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-primary-50 px-4">
-        <div className="max-w-md w-full rounded-2xl bg-white p-8 shadow-2xl shadow-primary-900/5">
+      <div className="flex h-screen w-full items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-md w-full rounded-3xl bg-white p-8 shadow-xl">
           <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-6 rounded-full bg-primary-100 p-4">
-              <FlaskConical className="h-10 w-10 text-primary-600" />
+            <div className="mb-6 rounded-2xl bg-secondary-500/20 p-4 text-secondary-500">
+              <FlaskConical className="h-10 w-10" />
             </div>
             <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900">
               SLRC Pharmaceutical Chemistry Lab
@@ -41,9 +41,9 @@ function AppContent() {
           
           <button
             onClick={signIn}
-            className="flex w-full items-center justify-center gap-3 rounded-lg bg-primary-600 px-4 py-3.5 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-primary-950 px-4 py-4 text-sm font-medium text-white transition-all hover:bg-primary-900 hover:shadow-lg hover:shadow-primary-900/20"
           >
-            <LogIn className="h-4 w-4" />
+            <LogIn className="h-5 w-5" />
             Sign in with Google
           </button>
         </div>
@@ -56,28 +56,72 @@ function AppContent() {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col md:flex-row overflow-hidden bg-primary-50">
-      {/* Mobile Header */}
-      <header className="md:hidden flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 shrink-0">
+    <div className="flex h-screen w-full flex-col md:flex-row overflow-hidden bg-transparent">
+      {/* Mobile Top Header (only visible on small screens to replace desktop sidebar logo) */}
+      <header className="md:hidden flex h-16 items-center justify-between bg-primary-950 px-4 shrink-0 text-white">
         <div className="flex items-center gap-2">
-          <FlaskConical className="h-5 w-5 text-primary-600" />
-          <span className="font-semibold text-gray-900">SLRC Lab</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary-500/20 text-secondary-500">
+            <FlaskConical className="h-5 w-5" />
+          </div>
+          <span className="font-semibold">SLRC Lab</span>
         </div>
-        <button onClick={logOut} className="p-2 text-gray-500 hover:text-red-600 transition-colors">
-          <LogOut className="h-5 w-5" />
-        </button>
       </header>
 
       <Sidebar currentView={currentView} onNavigate={setCurrentView} />
       
-      <main className="flex-1 overflow-y-auto px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8">
-        <div className="mx-auto max-w-6xl">
-          {currentView === 'dashboard' && <Dashboard />}
-          {currentView === 'inventory' && <Inventory />}
-          {currentView === 'borrowing' && <Borrowing />}
-          {currentView === 'users' && <Users />}
-        </div>
-      </main>
+      <div className="flex flex-1 flex-col min-w-0">
+        {/* Desktop Top Header */}
+        <header className="hidden md:flex h-24 shrink-0 items-center justify-between px-8">
+          {/* Search Bar */}
+          <div className="relative w-96">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search here"
+              className="w-full rounded-full bg-white px-12 py-3.5 text-sm outline-none placeholder:text-gray-400 shadow-sm border border-gray-100 focus:border-primary-200 focus:ring-4 focus:ring-primary-50 transition-all"
+            />
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center gap-4">
+            <button className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm border border-gray-100 hover:text-primary-600 transition-colors">
+              <Bell className="h-5 w-5" />
+            </button>
+            <button className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm border border-gray-100 hover:text-primary-600 transition-colors">
+              <Calendar className="h-5 w-5" />
+            </button>
+            <button onClick={logOut} className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm border border-gray-100 hover:text-red-600 transition-colors">
+              <LogOut className="h-5 w-5" />
+            </button>
+            
+            <div className="ml-4 flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-2 rounded-2xl transition-colors">
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt="" className="h-10 w-10 rounded-full object-cover shadow-sm" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700">
+                  {user?.email?.[0].toUpperCase()}
+                </div>
+              )}
+              <div className="flex flex-col hidden lg:flex">
+                <span className="text-sm font-semibold text-gray-900 leading-tight">
+                  {user?.displayName || 'User'}
+                </span>
+                <span className="text-xs text-gray-500 capitalize">{userRole?.replace('_', ' ')}</span>
+              </div>
+              <ChevronDown className="h-4 w-4 text-gray-400 hidden lg:block" />
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto px-4 py-6 pb-24 md:px-8 md:py-0 md:pb-8">
+          <div className="mx-auto max-w-[1400px]">
+            {currentView === 'dashboard' && <Dashboard />}
+            {currentView === 'inventory' && <Inventory />}
+            {currentView === 'borrowing' && <Borrowing />}
+            {currentView === 'users' && <Users />}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
