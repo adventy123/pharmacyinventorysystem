@@ -1,0 +1,143 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Definition
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    
+    // Auth helpers
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function getUserRole() {
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      return exists(userPath) ? get(userPath).data.role : null;
+    }
+    
+    function isAdminOrTech() {
+      let role = getUserRole();
+      return role == 'admin' || role == 'lab_tech';
+    }
+    
+    function isAdmin() {
+      return getUserRole() == 'admin';
+    }
+
+    // Role bootstrap: if the user's email matches the creator's email, they can be admin
+    function isSuperAdminEmail() {
+      return request.auth.token.email.lower() == 'kyleganoza1@gmail.com';
+    }
+
+    // --- User Validation ---
+    function isValidUser(data) {
+      let hasRequired = data.keys().hasAll(['email', 'role', 'createdAt']);
+      let validKeys = hasRequired && data.keys().size() <= 4;
+      let validEmail = data.email is string && data.email.size() <= 200;
+      let validRole = data.role is string && (data.role == 'admin' || data.role == 'lab_tech' || data.role == 'student' || data.role == 'faculty');
+      let validName = !('displayName' in data) || (data.displayName is string && data.displayName.size() <= 100);
+      let validDate = data.createdAt == request.time;
+      return validKeys && validEmail && validRole && validName && validDate;
+    }
+
+    function isValidUserUpdate(data) {
+      let validKeys = data.keys().hasAny(['displayName', 'role']);
+      let noExtraKeys = data.diff(existing()).affectedKeys().hasOnly(['displayName', 'role']);
+      let validName = !('displayName' in data) || (data.displayName is string && data.displayName.size() <= 100);
+      let validRole = !('role' in data) || (data.role is string && (data.role == 'admin' || data.role == 'lab_tech' || data.role == 'student' || data.role == 'faculty'));
+      return validKeys && noExtraKeys && validName && validRole;
+    }
+
+    // --- Item Validation ---
+    function isValidItem(data) {
+      // name, type, quantity, createdAt, updatedAt
+      let hasRequired = data.keys().hasAll(['name', 'type', 'quantity', 'createdAt', 'updatedAt']);
+      let validExtra = data.keys().size() <= 7;
+      let validName = data.name is string && data.name.size() > 0 && data.name.size() <= 200;
+      let validType = data.type is string && (data.type == 'glassware' || data.type == 'chemical' || data.type == 'equipment');
+      let validQuantity = data.quantity is number && data.quantity >= 0;
+      let validDesc = !('description' in data) || (data.description is string && data.description.size() <= 1000);
+      let validLoc = !('location' in data) || (data.location is string && data.location.size() <= 200);
+      let validDateCreate = data.createdAt == request.time;
+      let validDateUpdate = data.updatedAt == request.time;
+      return hasRequired && validExtra && validName && validType && validQuantity && validDesc && validLoc && validDateCreate && validDateUpdate;
+    }
+
+    // --- BorrowRecord Validation ---
+    function isValidBorrowRecord(data) {
+      let hasRequired = data.keys().hasAll(['itemId', 'userId', 'quantity', 'status', 'borrowDate']);
+      let validExtra = data.keys().size() <= 6;
+      let validItem = data.itemId is string && data.itemId.size() <= 128;
+      let validUser = data.userId is string && data.userId.size() <= 128;
+      let validQuantity = data.quantity is number && data.quantity > 0;
+      let validStatus = data.status is string && (data.status == 'borrowed' || data.status == 'returned' || data.status == 'overdue');
+      let validDate = data.borrowDate == request.time;
+      let validReturn = !('returnDate' in data) || (data.returnDate is timestamp || data.returnDate == request.time);
+      return hasRequired && validExtra && validItem && validUser && validQuantity && validStatus && validDate && validReturn;
+    }
+
+    // MATCHES
+    match /users/{userId} {
+      allow get: if isSignedIn() && (isOwner(userId) || isAdminOrTech());
+      // No listing users to prevent scraping, except for admin/tech
+      allow list: if isSignedIn() && isAdminOrTech();
+      
+      // Let user create their own profile
+      allow create: if isSignedIn() && isOwner(userId) && isValidUser(incoming()) && (
+        incoming().role in ['admin', 'student']
+      );
+      
+      allow update: if isSignedIn() && isValidUserUpdate(incoming()) && (
+        (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['displayName'])) ||
+        (isAdmin() && incoming().diff(existing()).affectedKeys().hasAny(['displayName', 'role']))
+      );
+    }
+
+    match /items/{itemId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isAdminOrTech() && isValidId(itemId) && isValidItem(incoming());
+      
+      allow update: if isSignedIn() && isAdminOrTech() && isValidId(itemId) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'type', 'description', 'quantity', 'location', 'updatedAt']) &&
+        incoming().name is string && incoming().name.size() <= 200 &&
+        incoming().type in ['glassware', 'chemical', 'equipment'] &&
+        incoming().quantity is number && incoming().quantity >= 0 &&
+        (!('description' in incoming()) || (incoming().description is string && incoming().description.size() <= 1000)) &&
+        (!('location' in incoming()) || (incoming().location is string && incoming().location.size() <= 200)) &&
+        incoming().updatedAt == request.time
+      );
+      
+      allow delete: if isSignedIn() && isAdmin();
+    }
+
+    match /borrowRecords/{recordId} {
+      // Students can read their own or admins can read all
+      allow get: if isSignedIn() && (isAdminOrTech() || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && (isAdminOrTech() || resource.data.userId == request.auth.uid);
+      
+      // Only admin or tech can record a borrowing event
+      // Atomicity: We should realistically verify the item exists, but get() has standard read limits.
+      allow create: if isSignedIn() && isAdminOrTech() && isValidId(recordId) && isValidBorrowRecord(incoming()) && 
+                    exists(/databases/$(database)/documents/items/$(incoming().itemId)) && 
+                    exists(/databases/$(database)/documents/users/$(incoming().userId));
+                    
+      allow update: if isSignedIn() && isAdminOrTech() && isValidId(recordId) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'returnDate']) &&
+        incoming().status in ['borrowed', 'returned', 'overdue'] &&
+        (!('returnDate' in incoming()) || incoming().returnDate == request.time)
+      );
+      // No deleting records for audit purposes, except admin? Let's disallow delete completely.
+      allow delete: if false;
+    }
+  }
+}
