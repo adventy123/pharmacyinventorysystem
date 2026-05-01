@@ -57,13 +57,25 @@ function AppContent() {
 
   return (
     <div className="flex h-screen w-full flex-col md:flex-row overflow-hidden bg-transparent">
-      {/* Mobile Top Header (only visible on small screens to replace desktop sidebar logo) */}
-      <header className="md:hidden flex h-16 items-center justify-between bg-primary-950 px-4 shrink-0 text-white">
+      {/* Mobile Top Header */}
+      <header className="md:hidden flex h-16 items-center justify-between bg-primary-950 px-4 shrink-0 text-white z-40">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary-500/20 text-secondary-500">
             <FlaskConical className="h-5 w-5" />
           </div>
           <span className="font-semibold">SLRC Lab</span>
+        </div>
+        <div className="flex items-center gap-3">
+          {user?.photoURL ? (
+            <img src={user.photoURL} alt="" className="h-8 w-8 rounded-full object-cover shadow-sm border border-primary-800" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-800 text-xs font-semibold text-white">
+              {user?.email?.[0].toUpperCase()}
+            </div>
+          )}
+          <button onClick={logOut} className="p-2 text-primary-200 hover:text-red-400 transition-colors">
+            <LogOut className="h-5 w-5" />
+          </button>
         </div>
       </header>
 

@@ -110,7 +110,7 @@ export function Inventory() {
         </div>
       </div>
 
-      <div className="rounded-[2rem] border border-gray-100 bg-white shadow-sm overflow-hidden p-4">
+      <div className="rounded-2xl md:rounded-[2rem] border border-gray-100 bg-white shadow-sm overflow-hidden p-4 md:p-6">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="bg-gray-50 text-gray-600">

@@ -86,69 +86,69 @@ export function Dashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Top Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {cards.map((card, i) => (
           <div 
             key={i} 
             className={cn(
-              "rounded-[2rem] p-8 shadow-sm transition-all hover:shadow-md flex flex-col justify-between min-h-[160px]",
+              "rounded-2xl md:rounded-[2rem] p-6 md:p-8 shadow-sm transition-all hover:shadow-md flex flex-col justify-between min-h-[140px] md:min-h-[160px]",
               card.solid ? "bg-secondary-500 text-white" : "bg-white border border-gray-100"
             )}
           >
             <div>
-              <p className={cn("text-sm font-medium", card.solid ? "text-white/80" : "text-gray-500")}>
+              <p className={cn("text-xs md:text-sm font-medium", card.solid ? "text-white/80" : "text-gray-500")}>
                 {card.title}
               </p>
-              <p className={cn("mt-2 text-4xl font-bold tracking-tight", card.solid ? "text-white" : "text-gray-900")}>
+              <p className={cn("mt-1 md:mt-2 text-3xl md:text-4xl font-bold tracking-tight", card.solid ? "text-white" : "text-gray-900")}>
                 {card.value}
               </p>
             </div>
             <div className={cn(
-              "self-end rounded-full p-3 mt-4",
+              "self-end rounded-full p-2.5 md:p-3 mt-4",
               card.solid ? "bg-white/20 text-white" : "bg-gray-50 text-gray-400"
             )}>
-              <card.icon className="h-6 w-6" />
+              <card.icon className="h-5 w-5 md:h-6 md:w-6" />
             </div>
           </div>
         ))}
       </div>
 
       {/* Recent Activity Table */}
-      <div className="rounded-[2rem] bg-white p-8 shadow-sm border border-gray-100">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Borrowings</h2>
+      <div className="rounded-2xl md:rounded-[2rem] bg-white p-5 md:p-8 shadow-sm border border-gray-100">
+        <div className="mb-4 md:mb-6 flex items-center justify-between">
+          <h2 className="text-base md:text-lg font-semibold text-gray-900">Recent Borrowings</h2>
         </div>
         
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="border-b border-gray-100 text-gray-400">
               <tr>
-                <th className="pb-4 font-medium">Item Name</th>
-                {isAdminOrTech && <th className="pb-4 font-medium">Borrower</th>}
-                <th className="pb-4 font-medium">Date</th>
-                <th className="pb-4 font-medium">Qty</th>
-                <th className="pb-4 font-medium">Status</th>
+                <th className="pb-3 md:pb-4 font-medium">Item Name</th>
+                {isAdminOrTech && <th className="pb-3 md:pb-4 font-medium">Borrower</th>}
+                <th className="pb-3 md:pb-4 font-medium">Date</th>
+                <th className="pb-3 md:pb-4 font-medium">Qty</th>
+                <th className="pb-3 md:pb-4 font-medium">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {recentActivity.map(record => (
                 <tr key={record.id} className="group">
-                  <td className="py-4 font-medium text-gray-900">
+                  <td className="py-3 md:py-4 font-medium text-gray-900">
                     {itemsMap[record.itemId] || 'Unknown Item'}
                   </td>
                   {isAdminOrTech && (
-                    <td className="py-4 text-gray-500">
+                    <td className="py-3 md:py-4 text-gray-500">
                       {usersMap[record.userId] || 'Unknown User'}
                     </td>
                   )}
-                  <td className="py-4 text-gray-500">
+                  <td className="py-3 md:py-4 text-gray-500">
                     {record.borrowDate?.toDate()?.toLocaleDateString() || 'Pending'}
                   </td>
-                  <td className="py-4 font-mono text-gray-600">x{record.quantity}</td>
-                  <td className="py-4">
-                    <span className={cn('inline-flex items-center px-3 py-1 rounded-full text-xs font-medium',
+                  <td className="py-3 md:py-4 font-mono text-gray-600">x{record.quantity}</td>
+                  <td className="py-3 md:py-4">
+                    <span className={cn('inline-flex items-center px-2.5 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-medium',
                       record.status === 'borrowed' ? 'bg-secondary-50 text-secondary-700' :
                       record.status === 'returned' ? 'bg-emerald-50 text-emerald-700' :
                       'bg-red-50 text-red-700'
@@ -160,7 +160,7 @@ export function Dashboard() {
               ))}
               {recentActivity.length === 0 && (
                 <tr>
-                  <td colSpan={isAdminOrTech ? 5 : 4} className="py-8 text-center text-gray-500">
+                  <td colSpan={isAdminOrTech ? 5 : 4} className="py-6 md:py-8 text-center text-gray-500">
                     No recent activity found.
                   </td>
                 </tr>
