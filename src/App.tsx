@@ -33,14 +33,12 @@ function AppContent() {
             <div className="absolute top-[30%] -left-[10%] w-[50vw] h-[50vw] md:w-[20vw] md:h-[20vw] rounded-full bg-secondary-500/20 blur-3xl mix-blend-screen"></div>
         </div>
 
-        {/* Top Section / Logo Placeholder */}
+        {/* Top Section / Logo */}
         <div className="flex flex-1 md:flex-none md:mb-10 items-center justify-center p-8 pb-4 z-10 w-full">
           <div className="relative flex flex-col items-center">
-             {/* You can replace this icon with your actual <img src="/logo.png" /> */}
-             <div className="h-40 w-40 md:h-48 md:w-48 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-2xl transition-transform hover:scale-105 duration-500">
-               <FlaskConical className="h-20 w-20 md:h-24 md:w-24 text-white drop-shadow-lg" />
+             <div className="h-40 w-40 md:h-48 md:w-48 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-2xl transition-transform hover:scale-105 duration-500 overflow-hidden p-4">
+               <img src="/SLRCLogo.png" alt="SLRC Logo" className="h-full w-full object-contain drop-shadow-md" />
              </div>
-             <p className="mt-6 text-white/60 font-medium tracking-widest uppercase text-xs">Your Logo Here</p>
           </div>
         </div>
 
