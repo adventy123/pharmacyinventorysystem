@@ -51,8 +51,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
           setLoading(false);
           return () => unsubDoc();
-        } catch (e) {
+        } catch (e: any) {
           console.error(e);
+          alert(`Login failed during profile fetch: ${e.message || e}`);
           setUser(null);
           setUserRole(null);
           setLoading(false);
