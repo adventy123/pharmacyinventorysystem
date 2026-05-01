@@ -43,13 +43,13 @@ function AppContent() {
         </div>
 
         {/* Bottom Sheet Section */}
-        <div className="w-full shrink-0 rounded-t-[2.5rem] bg-white px-8 pt-14 pb-14 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col items-center text-center z-10 md:max-w-md md:rounded-[2.5rem] md:shadow-2xl md:shrink md:flex-none md:mb-12">
+        <div className="w-full shrink-0 rounded-t-[2.5rem] bg-white px-8 pt-10 pb-10 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col items-center text-center z-10 md:max-w-md md:rounded-[2.5rem] md:shadow-2xl md:shrink md:flex-none md:mb-12">
           
-          <h1 className="mb-6 text-3xl md:text-4xl font-bold tracking-tight text-primary-600 uppercase leading-tight">
+          <h1 className="mb-3 text-3xl md:text-4xl font-bold tracking-tight text-primary-600 uppercase leading-tight">
             SLRC LAB INVENTORY SYSTEM
           </h1>
 
-          <p className="mb-12 text-sm md:text-base text-gray-500 leading-relaxed px-4 max-w-[320px]">
+          <p className="mb-8 text-sm md:text-base text-gray-500 leading-relaxed px-4 max-w-[320px]">
             Organize your lab workflow and manage inventory easily all in one simple, powerful app.
           </p>
           
